@@ -88,7 +88,6 @@ results.each do |r|
     area: r['CONST'],
     election: r['YEAR']
   }
-  puts data
   ScraperWiki.save_sqlite([:id], data)
 end
 
