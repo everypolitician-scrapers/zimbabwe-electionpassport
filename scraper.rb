@@ -4,6 +4,9 @@
 require 'scraperwiki'
 require 'colorize'
 require 'creek'
+require 'tempfile'
+require 'open-uri/cached'
+OpenURI::Cache.cache_path = '.cache'
 
 require 'pry'
 
@@ -25,7 +28,7 @@ class CreekTable
 
   private
   def book
-    @_book ||= Creek::Book.new(@_filename)
+    @_book ||= Creek::Book.new(@_filename, check_file_extension: false)
   end
 
   def columns
@@ -53,7 +56,11 @@ class CreekTable
 
 end
 
-table = CreekTable.new('ZW.xlsx').data
+url = 'http://www.electionpassport.com/files/ZW/ZW.xlsx'
+spreadsheet = Tempfile.new(['spreadsheet', '.xslx'])
+IO.copy_stream(open(url), spreadsheet)
+
+table = CreekTable.new(spreadsheet).data
 
 results = table.map do |row|
   parties = row.keys.select { |k| k.end_with? '_C' }.map { |k| k.chomp('_C') }
@@ -82,6 +89,6 @@ results.each do |r|
     election: r['YEAR']
   }
   puts data
-  # ScraperWiki.save_sqlite([:name], data)
+  ScraperWiki.save_sqlite([:id], data)
 end
 
