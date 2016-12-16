@@ -2,9 +2,9 @@
 # encoding: utf-8
 
 require 'scraperwiki'
-require 'colorize'
 require 'creek'
 require 'tempfile'
+
 require 'open-uri/cached'
 OpenURI::Cache.cache_path = '.cache'
 
